@@ -1,6 +1,6 @@
 #include <application.h>
 
-#include <clara.hpp>
+#include <lyra/lyra.hpp>
 #include <glad/glad.h>
 #include <iostream>
 
@@ -40,13 +40,13 @@ bool Application::Initialize(
 #endif
 
     bool show_help = false;
-    auto cli = clara::Help(show_help) |
-               clara::Opt(width, "width")
+    auto cli = lyra::help(show_help) |
+               lyra::opt(width, "width")
                    ["-w"]["--width"]("Game window width") |
-               clara::Opt(height, "height")
+               lyra::opt(height, "height")
                    ["-h"]["--height"]("Game window height");
 
-    auto result = cli.parse(clara::Args(argc, argv));
+    auto result = cli.parse(lyra::args(argc, argv));
 
     if (show_help)
     {
@@ -64,7 +64,7 @@ bool Application::Initialize(
     {
         spdlog::error("initializing SDL failed");
 
-        return -1;
+        return false;
     }
 
     // For antialiasing
@@ -88,7 +88,7 @@ bool Application::Initialize(
 
         Cleanup();
 
-        return -1;
+        return false;
     }
 
     _context = SDL_GL_CreateContext(_window);
@@ -98,7 +98,7 @@ bool Application::Initialize(
 
         Cleanup();
 
-        return -1;
+        return false;
     }
 
     if (!gladLoadGL())

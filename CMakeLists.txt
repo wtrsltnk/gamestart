@@ -13,18 +13,19 @@ find_package(OpenGL REQUIRED)
 CPMAddPackage(
     NAME spdlog
     GITHUB_REPOSITORY gabime/spdlog
-    VERSION 1.7.0)
+    VERSION 1.7.0
+)
 
 CPMAddPackage(
-    NAME Clara
-    GITHUB_REPOSITORY catchorg/Clara
-    VERSION 1.1.5
+    NAME Lyra
+    GITHUB_REPOSITORY bfgroup/Lyra
+    GIT_TAG 1.5.1
     DOWNLOAD_ONLY True
 )
 
-if (Clara_ADDED)
-    add_library(Clara INTERFACE)
-    target_include_directories(Clara INTERFACE ${Clara_SOURCE_DIR}/single_include)
+if (Lyra_ADDED)
+    add_library(Lyra INTERFACE)
+    target_include_directories(Lyra INTERFACE ${Lyra_SOURCE_DIR}/include)
 endif()
 
 CPMAddPackage(
@@ -42,14 +43,14 @@ CPMAddPackage(
 CPMAddPackage(
     NAME SDL2
     VERSION 2.0.12
-    URL https://libsdl.org/release/SDL2-2.0.12.zip
+    URL https://www.libsdl.org/release/SDL2-2.0.12.zip
     OPTIONS
         "SDL_SHARED Off"
 )
 
 CPMAddPackage(
     NAME EnTT
-    VERSION 3.5.2
+    GIT_TAG v3.5.2
     GITHUB_REPOSITORY skypjack/entt
     # EnTT's CMakeLists screws with configuration options
     DOWNLOAD_ONLY True
@@ -85,7 +86,7 @@ target_link_libraries(
         spdlog
         SDL2-static
         EnTT
-        Clara
+        Lyra
 )
 
 target_compile_features(
