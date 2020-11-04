@@ -202,6 +202,7 @@ bool Application::MainLoop()
 
     SDL_GL_MakeCurrent(_window, _context);
 
+    glClearColor(0.49, 0.62, 0.75, 0.0);
     glClear(GL_COLOR_BUFFER_BIT);
 
     for (auto &layer : _layers)
