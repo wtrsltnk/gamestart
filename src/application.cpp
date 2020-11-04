@@ -109,6 +109,8 @@ bool Application::Initialize(
 
         return false;
     }
+    
+    _scene.OnInitialize();
 
     if (!PlatformPostInitialize())
     {

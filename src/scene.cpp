@@ -12,6 +12,10 @@ entt::entity Scene::CreateEntity(
     return entt::entity();
 }
 
+void Scene::OnInitialize()
+{
+}
+
 void Scene::OnResizeEvent(
     int width,
     int height)

@@ -17,6 +17,8 @@ namespace gamestart
         entt::entity CreateEntity(
             const std::string &title);
 
+        void OnInitialize();
+
         void OnResizeEvent(
             int width,
             int height);

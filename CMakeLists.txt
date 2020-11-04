@@ -61,6 +61,31 @@ if (EnTT_ADDED)
     target_include_directories(EnTT INTERFACE ${EnTT_SOURCE_DIR}/src)
 endif()
 
+CPMAddPackage(
+    NAME imgui
+    GIT_TAG v1.79
+    GITHUB_REPOSITORY ocornut/imgui
+    DOWNLOAD_ONLY True
+)
+
+if (imgui_ADDED)
+    add_library(imgui)
+    target_include_directories(
+        imgui
+        PUBLIC
+            "${imgui_SOURCE_DIR}/"
+    )
+            
+    target_sources(
+        imgui
+        PUBLIC 
+            "${imgui_SOURCE_DIR}/imgui.cpp"
+            "${imgui_SOURCE_DIR}/imgui_demo.cpp"
+            "${imgui_SOURCE_DIR}/imgui_draw.cpp"
+            "${imgui_SOURCE_DIR}/imgui_widgets.cpp"
+    )
+endif()
+
 add_executable(
     gamestart
     "src/application.cpp"
@@ -87,6 +112,7 @@ target_link_libraries(
         SDL2-static
         EnTT
         Lyra
+        imgui
 )
 
 target_compile_features(
