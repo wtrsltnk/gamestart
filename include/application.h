@@ -1,11 +1,10 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include <renderer.h>
-#include <scene.h>
-
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
+
+#include <layer.h>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
@@ -27,10 +26,13 @@ namespace gamestart
             int argc,
             char *argv[]);
 
+        void AttachLayer(
+            Layer* layer);
+
         int Run();
 
 #if defined(EMSCRIPTEN)
-    static void MainLoopWrapper(void *arg);
+        static void MainLoopWrapper(void *arg);
 #endif
 
     private:
@@ -52,9 +54,7 @@ namespace gamestart
 
         SDL_GLContext _context;
 
-        Renderer _renderer;
-
-        Scene _scene;
+        std::vector<Layer*> _layers;
 
         const char *_title;
 

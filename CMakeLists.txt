@@ -74,6 +74,7 @@ if (imgui_ADDED)
         imgui
         PUBLIC
             "${imgui_SOURCE_DIR}/"
+            "${imgui_SOURCE_DIR}/examples/"
     )
             
     target_sources(
@@ -90,7 +91,11 @@ add_executable(
     gamestart
     "src/application.cpp"
     "src/glad.c"
+    "src/imguilayer.cpp"
+    "src/imgui_impl_opengl3.cpp"
+    "src/imgui_impl_opengl3.h"
     "src/inputmanager.cpp"
+    "src/layer.cpp"
     "src/main.cpp"
     "src/renderer.cpp"
     "src/scene.cpp"

@@ -3,11 +3,13 @@
 
 #include <cstdint>
 #include <entt/entt.hpp>
+#include <layer.h>
 
 namespace gamestart
 {
 
-    class Scene
+    class Scene :
+        public Layer
     {
     public:
         Scene();
@@ -17,14 +19,21 @@ namespace gamestart
         entt::entity CreateEntity(
             const std::string &title);
 
-        void OnInitialize();
+        virtual void OnAttach(
+            SDL_Window *window,
+            SDL_GLContext context);
 
-        void OnResizeEvent(
+        virtual void OnResizeEvent(
             int width,
             int height);
 
-        void OnUpdate(
+        virtual bool OnEvent(
+            const SDL_Event &event);
+
+        virtual void OnUpdate(
             uint32_t time);
+
+        virtual void OnDetach();
 
     private:
         entt::registry m_Registry;

@@ -1,5 +1,7 @@
 #include <application.h>
+#include <imguilayer.h>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -16,6 +18,11 @@ int main(
         std::cerr << "failed to initialize app" << std::endl;
         return 1;
     }
+
+    app.AttachLayer(
+        new gamestart::ImGuiLayer([]() {
+            ImGui::ShowDemoWindow();
+        }));
 
     return app.Run();
 }

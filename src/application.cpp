@@ -1,8 +1,9 @@
 #include <application.h>
 
-#include <lyra/lyra.hpp>
 #include <glad/glad.h>
+#include <imgui_impl_sdl.h>
 #include <iostream>
+#include <lyra/lyra.hpp>
 
 #if defined(EMSCRIPTEN)
 #include <emscripten.h>
@@ -27,7 +28,7 @@ bool Application::Initialize(
 {
     if (!PlatformPreInitialize(argc, argv))
     {
-        spdlog::error("pre initialize failed");
+        spdlog::error("platform pre initialize failed");
 
         return false;
     }
@@ -60,7 +61,7 @@ bool Application::Initialize(
         return false;
     }
 
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
     {
         spdlog::error("initializing SDL failed");
 
@@ -101,6 +102,9 @@ bool Application::Initialize(
         return false;
     }
 
+    SDL_GL_MakeCurrent(_window, _context);
+    SDL_GL_SetSwapInterval(1); // Enable vsync
+
     if (!gladLoadGL())
     {
         spdlog::error("glad load gl failed");
@@ -109,12 +113,10 @@ bool Application::Initialize(
 
         return false;
     }
-    
-    _scene.OnInitialize();
 
     if (!PlatformPostInitialize())
     {
-        spdlog::error("post initialize failed");
+        spdlog::error("platform post initialize failed");
 
         Cleanup();
 
@@ -124,10 +126,20 @@ bool Application::Initialize(
     return true;
 }
 
+void Application::AttachLayer(
+    Layer *layer)
+{
+    _layers.push_back(layer);
+
+    SDL_GL_MakeCurrent(_window, _context);
+
+    layer->OnAttach(_window, _context);
+}
+
 #if defined(EMSCRIPTEN)
 void Application::MainLoopWrapper(void *arg)
 {
-    static_cast<Application*>(arg)->MainLoop();
+    static_cast<Application *>(arg)->MainLoop();
 }
 #endif
 
@@ -168,16 +180,34 @@ bool Application::MainLoop()
             {
                 SDL_GL_MakeCurrent(_window, _context);
 
-                _scene.OnResizeEvent(
-                    event.window.data1,
-                    event.window.data2);
+                for (auto &layer : _layers)
+                {
+                    layer->OnResizeEvent(
+                        event.window.data1,
+                        event.window.data2);
+                }
+            }
+            else
+            {
+                for (auto itr = _layers.rbegin(); itr != _layers.rend(); ++itr)
+                {
+                    if ((*itr)->OnEvent(event))
+                    {
+                        break;
+                    }
+                }
             }
         }
     }
 
     SDL_GL_MakeCurrent(_window, _context);
 
-    _scene.OnUpdate(SDL_GetTicks());
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    for (auto &layer : _layers)
+    {
+        layer->OnUpdate(SDL_GetTicks());
+    }
 
     SDL_GL_SwapWindow(_window);
 
@@ -187,6 +217,13 @@ bool Application::MainLoop()
 void Application::Cleanup()
 {
     PlatformPreCleanup();
+
+    for (auto itr = _layers.rbegin(); itr != _layers.rend(); ++itr)
+    {
+        (*itr)->OnDetach();
+    }
+
+    _layers.clear();
 
     if (_context != nullptr)
     {

@@ -12,7 +12,9 @@ entt::entity Scene::CreateEntity(
     return entt::entity();
 }
 
-void Scene::OnInitialize()
+void Scene::OnAttach(
+    SDL_Window *window,
+    SDL_GLContext context)
 {
 }
 
@@ -22,7 +24,17 @@ void Scene::OnResizeEvent(
 {
 }
 
+bool Scene::OnEvent(
+    const SDL_Event &event)
+{
+    return false;
+}
+
 void Scene::OnUpdate(
     uint32_t time)
+{
+}
+
+void Scene::OnDetach()
 {
 }
