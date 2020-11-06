@@ -98,6 +98,7 @@ add_executable(
     "src/layer.cpp"
     "src/main.cpp"
     "src/renderer.cpp"
+    "src/scenelayer.cpp"
     "src/scene.cpp"
 )
 

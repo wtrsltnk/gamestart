@@ -196,8 +196,6 @@ void ImGuiLayer::OnUpdate(
 
     ImGui_ImplSDL2_UpdateMousePosAndButtons(io);
     ImGui_ImplSDL2_UpdateMouseCursor(io);
-
-    // Update game controllers (if enabled and available)
     ImGui_ImplSDL2_UpdateGamepads(io);
 
     ImGui::NewFrame();
