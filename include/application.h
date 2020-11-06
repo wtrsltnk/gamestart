@@ -5,7 +5,7 @@
 #include <SDL.h>
 
 #include <layer.h>
-#include <spdlog/spdlog.h>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -27,7 +27,7 @@ namespace gamestart
             char *argv[]);
 
         void AttachLayer(
-            Layer* layer);
+            std::unique_ptr<Layer> layer);
 
         int Run();
 
@@ -54,7 +54,7 @@ namespace gamestart
 
         SDL_GLContext _context;
 
-        std::vector<Layer*> _layers;
+        std::vector<std::unique_ptr<Layer>> _layers;
 
         const char *_title;
 

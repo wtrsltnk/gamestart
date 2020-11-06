@@ -1,5 +1,7 @@
 #include <application.h>
 
+#include <spdlog/spdlog.h>
+
 using namespace gamestart;
 
 bool Application::PlatformPreInitialize(

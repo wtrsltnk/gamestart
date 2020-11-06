@@ -16,17 +16,16 @@ int main(
 
     if (!app.Initialize(argc, argv))
     {
-        std::cerr << "failed to initialize app" << std::endl;
-        return 1;
+        return 0;
     }
 
     app.AttachLayer(
-        new gamestart::SceneLayer());
+        std::unique_ptr<gamestart::SceneLayer>(new gamestart::SceneLayer()));
 
     app.AttachLayer(
-        new gamestart::ImGuiLayer([]() {
+        std::unique_ptr<gamestart::ImGuiLayer>(new gamestart::ImGuiLayer([]() {
             ImGui::ShowDemoWindow();
-        }));
+        })));
 
     return app.Run();
 }

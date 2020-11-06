@@ -4,6 +4,7 @@
 #include <imgui_impl_sdl.h>
 #include <iostream>
 #include <lyra/lyra.hpp>
+#include <spdlog/spdlog.h>
 
 #if defined(EMSCRIPTEN)
 #include <emscripten.h>
@@ -18,7 +19,9 @@ Application::Application(
     : _title(title),
       _initialWidth(initialWidth),
       _initialHeight(initialHeight)
-{}
+{
+    spdlog::set_level(spdlog::level::debug);
+}
 
 Application::~Application() = default;
 
@@ -26,19 +29,9 @@ bool Application::Initialize(
     int argc,
     char *argv[])
 {
-    if (!PlatformPreInitialize(argc, argv))
-    {
-        spdlog::error("platform pre initialize failed");
-
-        return false;
-    }
-
     int width = _initialWidth, height = _initialHeight;
+    std::string logLevel;
     uint32_t flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
-
-#if defined(__ANDROID__)
-    flags |= SDL_WINDOW_FULLSCREEN;
-#endif
 
     bool show_help = false;
     auto cli = lyra::help(show_help) |
@@ -52,11 +45,22 @@ bool Application::Initialize(
     if (show_help)
     {
         std::cout << cli << std::endl;
+        
+        return false;
     }
+
+    spdlog::debug("Initialize");
 
     if (!result)
     {
         spdlog::error("arguments parsing failed with message: {0}", result.errorMessage());
+
+        return false;
+    }
+
+    if (!PlatformPreInitialize(argc, argv))
+    {
+        spdlog::error("platform pre initialize failed");
 
         return false;
     }
@@ -74,6 +78,10 @@ bool Application::Initialize(
 
     // the minimum number of bits in the depth buffer; defaults to 16
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
+#if defined(__ANDROID__)
+    flags |= SDL_WINDOW_FULLSCREEN;
+#endif
 
     _window = SDL_CreateWindow(
         _title,
@@ -127,13 +135,15 @@ bool Application::Initialize(
 }
 
 void Application::AttachLayer(
-    Layer *layer)
+    std::unique_ptr<Layer> layer)
 {
-    _layers.push_back(layer);
+    spdlog::debug("Attach layer");
 
     SDL_GL_MakeCurrent(_window, _context);
 
     layer->OnAttach(_window, _context);
+
+    _layers.push_back(std::move(layer));
 }
 
 #if defined(EMSCRIPTEN)
@@ -145,10 +155,14 @@ void Application::MainLoopWrapper(void *arg)
 
 int Application::Run()
 {
+    spdlog::debug("Run");
+
 #if defined(EMSCRIPTEN)
     emscripten_set_main_loop_arg(Application::MainLoopWrapper, this, 0, 0);
     return 0;
 #endif
+
+    spdlog::debug("Starting mainloop");
 
     while (true)
     {
@@ -158,7 +172,11 @@ int Application::Run()
         }
     }
 
+    spdlog::debug("Mainloop finished");
+
     Cleanup();
+
+    spdlog::debug("Finished Run");
 
     return 0;
 }
@@ -174,6 +192,8 @@ bool Application::MainLoop()
         {
             if (event.window.event == SDL_WINDOWEVENT_CLOSE)
             {
+                spdlog::debug("Window close event recieved, stopping the mainloop");
+
                 running = false;
             }
             else if (event.window.event == SDL_WINDOWEVENT_RESIZED)
@@ -202,7 +222,7 @@ bool Application::MainLoop()
 
     SDL_GL_MakeCurrent(_window, _context);
 
-    glClearColor(0.49, 0.62, 0.75, 0.0);
+    glClearColor(0.49f, 0.62f, 0.75f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     for (auto &layer : _layers)
@@ -217,15 +237,17 @@ bool Application::MainLoop()
 
 void Application::Cleanup()
 {
+    spdlog::debug("Cleanup");
+
     PlatformPreCleanup();
 
     for (auto itr = _layers.rbegin(); itr != _layers.rend(); ++itr)
     {
         (*itr)->OnDetach();
     }
-
+    
     _layers.clear();
-
+    
     if (_context != nullptr)
     {
         SDL_GL_DeleteContext(_context);
