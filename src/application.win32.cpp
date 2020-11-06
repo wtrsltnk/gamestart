@@ -4,9 +4,7 @@
 
 using namespace gamestart;
 
-bool Application::PlatformPreInitialize(
-    int argc,
-    char *argv[])
+bool Application::PlatformPreInitialize()
 {
     return true;
 }

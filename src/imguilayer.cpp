@@ -5,13 +5,15 @@
 #include "imgui_impl_opengl3.h"
 
 #include <SDL_syswm.h>
+#include <array>
+#include <numeric>
 
 #define SDL_HAS_CAPTURE_AND_GLOBAL_MOUSE SDL_VERSION_ATLEAST(2, 0, 4)
 
 using namespace gamestart;
 
 ImGuiLayer::ImGuiLayer(
-    std::function<void()> drawUi)
+    std::function<void(uint32_t)> drawUi)
     : _drawUi(drawUi)
 {}
 
@@ -167,6 +169,19 @@ bool ImGuiLayer::OnEvent(
 void ImGuiLayer::OnUpdate(
     uint32_t time)
 {
+    const int savedFrameTimes = 100;
+    static std::array<uint32_t, savedFrameTimes> pastFrameTimes({time});
+    static uint32_t pastFrameTimesCursor = 0;
+    static uint32_t lastFrameTime = 0;
+    float framespersecond;
+
+    pastFrameTimes[pastFrameTimesCursor] = time - lastFrameTime;
+    lastFrameTime = time;
+
+    framespersecond = 1000.0 / (std::accumulate(pastFrameTimes.begin(), pastFrameTimes.end(), 0) / savedFrameTimes);
+
+    pastFrameTimesCursor = (pastFrameTimesCursor + 1) % savedFrameTimes;
+
     ImGui_ImplOpenGL3_NewFrame();
 
     ImGuiIO &io = ImGui::GetIO();
@@ -200,7 +215,7 @@ void ImGuiLayer::OnUpdate(
 
     ImGui::NewFrame();
 
-    _drawUi();
+    _drawUi(framespersecond);
 
     ImGui::Render();
 

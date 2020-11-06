@@ -3,7 +3,6 @@
 #include <glad/glad.h>
 #include <imgui_impl_sdl.h>
 #include <iostream>
-#include <lyra/lyra.hpp>
 #include <spdlog/spdlog.h>
 
 #if defined(EMSCRIPTEN)
@@ -25,40 +24,14 @@ Application::Application(
 
 Application::~Application() = default;
 
-bool Application::Initialize(
-    int argc,
-    char *argv[])
+bool Application::Initialize()
 {
     int width = _initialWidth, height = _initialHeight;
-    std::string logLevel;
     uint32_t flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
-
-    bool show_help = false;
-    auto cli = lyra::help(show_help) |
-               lyra::opt(width, "width")
-                   ["-w"]["--width"]("Game window width") |
-               lyra::opt(height, "height")
-                   ["-h"]["--height"]("Game window height");
-
-    auto result = cli.parse(lyra::args(argc, argv));
-
-    if (show_help)
-    {
-        std::cout << cli << std::endl;
-        
-        return false;
-    }
 
     spdlog::debug("Initialize");
 
-    if (!result)
-    {
-        spdlog::error("arguments parsing failed with message: {0}", result.errorMessage());
-
-        return false;
-    }
-
-    if (!PlatformPreInitialize(argc, argv))
+    if (!PlatformPreInitialize())
     {
         spdlog::error("platform pre initialize failed");
 
@@ -111,7 +84,7 @@ bool Application::Initialize(
     }
 
     SDL_GL_MakeCurrent(_window, _context);
-    SDL_GL_SetSwapInterval(1); // Enable vsync
+    //SDL_GL_SetSwapInterval(1); // Enable vsync
 
     if (!gladLoadGL())
     {

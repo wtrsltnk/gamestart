@@ -22,9 +22,7 @@ namespace gamestart
 
         virtual ~Application();
 
-        bool Initialize(
-            int argc,
-            char *argv[]);
+        bool Initialize();
 
         void AttachLayer(
             std::unique_ptr<Layer> layer);
@@ -36,9 +34,7 @@ namespace gamestart
 #endif
 
     private:
-        bool PlatformPreInitialize(
-            int argc,
-            char *argv[]);
+        bool PlatformPreInitialize();
 
         bool PlatformPostInitialize();
 

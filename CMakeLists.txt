@@ -115,11 +115,26 @@ target_link_libraries(
         fmt
         glm
         spdlog
-        SDL2-static
         EnTT
         Lyra
         imgui
 )
+
+if (WIN32)
+
+    target_link_libraries(
+        gamestart
+        PRIVATE
+            SDL2-static)
+
+else()
+
+    target_link_libraries(
+        gamestart
+        PRIVATE
+            SDL2)
+
+endif()
 
 target_compile_features(
     gamestart

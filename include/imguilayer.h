@@ -13,7 +13,7 @@ namespace gamestart
     {
     public:
         ImGuiLayer(
-            std::function<void()> drawUi);
+            std::function<void(uint32_t)> drawUi);
 
         virtual ~ImGuiLayer();
 
@@ -41,7 +41,7 @@ namespace gamestart
         SDL_Cursor *_mouseCursors[ImGuiMouseCursor_COUNT] = {};
         char *_clipboardTextData = nullptr;
         bool _mouseCanUseGlobalState = true;
-        std::function<void()> _drawUi;
+        std::function<void(uint32_t)> _drawUi;
 
         static const char *ImGui_ImplSDL2_GetClipboardText(
             void *userData);
