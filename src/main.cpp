@@ -33,6 +33,8 @@ int main(
     {
         spdlog::error("arguments parsing failed with message: {0}", result.errorMessage());
 
+        std::cout << cli << std::endl;
+
         return 0;
     }
 

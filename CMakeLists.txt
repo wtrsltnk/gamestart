@@ -89,6 +89,7 @@ endif()
 
 add_executable(
     gamestart
+    "src/tiny_obj_loader.cpp"
     "src/application.cpp"
     "src/glad.c"
     "src/imguilayer.cpp"
