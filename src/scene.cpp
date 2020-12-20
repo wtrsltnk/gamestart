@@ -29,6 +29,16 @@ entt::entity Scene::CreateEntity(
     return result;
 }
 
+void Scene::SetEntityAsset(
+    entt::entity e,
+    const std::string &assetName)
+{
+    GraphicsComponent comp;
+    comp.asset = assetName;
+
+    m_Registry.emplace_or_replace<GraphicsComponent>(e, comp);
+}
+
 void Scene::Initialize(
     AssetsManager &assetsManager)
 {
@@ -56,6 +66,35 @@ void Scene::OnUpdate(
     uint32_t time)
 {
     (void)time;
+    auto view = m_Registry.view<LoadedGraphicsAssetComponent>();
+
+    for (auto entity : view)
+    {
+        auto graphicsComponent = m_Registry.get<LoadedGraphicsAssetComponent>(entity);
+
+        if (graphicsComponent.asset.get()->shaderId == 0)
+        {
+            continue;
+        }
+
+        glUseProgram(graphicsComponent.asset.get()->shaderId);
+
+        for (auto mesh : graphicsComponent.asset.get()->loadedMeshes)
+        {
+            if (mesh.vao == 0)
+            {
+                continue;
+            }
+
+            glBindVertexArray(mesh.vao);
+
+            glDrawArrays(GL_TRIANGLES, 0, 3 * mesh.triangleCount);
+
+            glBindVertexArray(0);
+        }
+
+        glUseProgram(0);
+    }
 }
 
 void Scene::Cleanup(

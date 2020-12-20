@@ -56,7 +56,14 @@ int main(
             ImGui::ShowDemoWindow();
         })));
 
-    auto sceneLayer = app.GetFirstLayerOfType<gamestart::GameLayer>();
+    auto gameLayer = app.GetFirstLayerOfType<gamestart::GameLayer>();
+
+    gamestart::Scene scene;
+
+    auto test = scene.CreateEntity("tree");
+    scene.SetEntityAsset(test, "tree.obj");
+
+    gameLayer->SetScene(&scene);
 
     return app.Run();
 }

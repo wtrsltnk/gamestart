@@ -19,6 +19,10 @@ namespace gamestart
         entt::entity CreateEntity(
             const std::string &title);
 
+        void SetEntityAsset(
+            entt::entity e,
+            const std::string &assetName);
+
         virtual void Initialize(
             AssetsManager &assetsManager);
 

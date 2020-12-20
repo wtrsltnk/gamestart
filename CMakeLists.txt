@@ -24,6 +24,18 @@ target_include_directories(
         src/thirdparty
 )
 
+add_library(
+    stb
+    "src/thirdparty/stb_image.c"
+    "src/thirdparty/stb_image.h"
+)
+
+target_include_directories(
+    stb
+    PUBLIC
+        src/thirdparty
+)
+
 add_executable(
     gamestart
     "include/entities/graphicscomponent.h"
@@ -33,8 +45,6 @@ add_executable(
     "include/core/application.h"
     "include/core/assetsmanager.h"
     "src/core/assetsmanager.cpp"
-    "src/core/drawobject.cpp"
-    "include/core/drawobject.h"
     "src/core/glad.c"
     "src/core/imguilayer.cpp"
     "include/core/imguilayer.h"
@@ -63,6 +73,7 @@ target_link_libraries(
     gamestart
     PRIVATE
         tiny_obj_loader
+        stb
         ${OPENGL_LIBRARIES}
         fmt
         glm
