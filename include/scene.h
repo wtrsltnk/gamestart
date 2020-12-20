@@ -1,6 +1,8 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include <core/assetsmanager.h>
+
 #include <cstdint>
 #include <entt/entt.hpp>
 
@@ -17,7 +19,8 @@ namespace gamestart
         entt::entity CreateEntity(
             const std::string &title);
 
-        virtual void Initialize();
+        virtual void Initialize(
+            AssetsManager &assetsManager);
 
         virtual void OnResizeEvent(
             int width,
@@ -26,7 +29,8 @@ namespace gamestart
         virtual void OnUpdate(
             uint32_t time);
 
-        virtual void Cleanup();
+        virtual void Cleanup(
+            AssetsManager &assetsManager);
 
     private:
         entt::registry m_Registry;

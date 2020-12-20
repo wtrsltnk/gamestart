@@ -10,97 +10,47 @@ project(
 
 find_package(OpenGL REQUIRED)
 
-CPMAddPackage(
-    NAME spdlog
-    GITHUB_REPOSITORY gabime/spdlog
-    VERSION 1.7.0
+include(cmake/Dependencies.cmake)
+
+add_library(
+    tiny_obj_loader
+    "src/thirdparty/tiny_obj_loader.cpp"
+    "src/thirdparty/tiny_obj_loader.h"
 )
 
-CPMAddPackage(
-    NAME Lyra
-    GITHUB_REPOSITORY bfgroup/Lyra
-    GIT_TAG 1.5.1
-    DOWNLOAD_ONLY True
+target_include_directories(
+    tiny_obj_loader
+    PUBLIC
+        src/thirdparty
 )
-
-if (Lyra_ADDED)
-    add_library(Lyra INTERFACE)
-    target_include_directories(Lyra INTERFACE ${Lyra_SOURCE_DIR}/include)
-endif()
-
-CPMAddPackage(
-    NAME fmt
-    GITHUB_REPOSITORY fmtlib/fmt
-    GIT_TAG 7.1.0
-)
-
-CPMAddPackage(
-    NAME glm
-    GIT_TAG 0.9.9.7
-    GITHUB_REPOSITORY g-truc/glm
-)
-
-CPMAddPackage(
-    NAME SDL2
-    VERSION 2.0.12
-    URL https://www.libsdl.org/release/SDL2-2.0.12.zip
-    OPTIONS
-        "SDL_SHARED Off"
-)
-
-CPMAddPackage(
-    NAME EnTT
-    GIT_TAG v3.5.2
-    GITHUB_REPOSITORY skypjack/entt
-    # EnTT's CMakeLists screws with configuration options
-    DOWNLOAD_ONLY True
-)
-
-if (EnTT_ADDED)
-    add_library(EnTT INTERFACE)
-    target_include_directories(EnTT INTERFACE ${EnTT_SOURCE_DIR}/src)
-endif()
-
-CPMAddPackage(
-    NAME imgui
-    GIT_TAG v1.79
-    GITHUB_REPOSITORY ocornut/imgui
-    DOWNLOAD_ONLY True
-)
-
-if (imgui_ADDED)
-    add_library(imgui)
-    target_include_directories(
-        imgui
-        PUBLIC
-            "${imgui_SOURCE_DIR}/"
-            "${imgui_SOURCE_DIR}/examples/"
-    )
-            
-    target_sources(
-        imgui
-        PUBLIC 
-            "${imgui_SOURCE_DIR}/imgui.cpp"
-            "${imgui_SOURCE_DIR}/imgui_demo.cpp"
-            "${imgui_SOURCE_DIR}/imgui_draw.cpp"
-            "${imgui_SOURCE_DIR}/imgui_widgets.cpp"
-    )
-endif()
 
 add_executable(
     gamestart
-    "src/tiny_obj_loader.cpp"
-    "src/application.cpp"
-    "src/glad.c"
-    "src/imguilayer.cpp"
-    "src/imgui_impl_opengl3.cpp"
-    "src/imgui_impl_opengl3.h"
-    "src/inputmanager.cpp"
-    "src/layer.cpp"
+    "include/entities/graphicscomponent.h"
+    "include/entities/namecomponent.h"
+    "include/entities/transformcomponent.h"
+    "src/core/application.cpp"
+    "include/core/application.h"
+    "include/core/assetsmanager.h"
+    "src/core/assetsmanager.cpp"
+    "src/core/drawobject.cpp"
+    "include/core/drawobject.h"
+    "src/core/glad.c"
+    "src/core/imguilayer.cpp"
+    "include/core/imguilayer.h"
+    "src/core/imgui_impl_opengl3.cpp"
+    "src/core/imgui_impl_opengl3.h"
+    "src/core/inputmanager.cpp"
+    "include/core/inputmanager.h"
+    "src/core/layer.cpp"
+    "include/core/layer.h"
+    "src/core/gamelayer.cpp"
+    "include/core/gamelayer.h"
     "src/main.cpp"
     "src/renderer.cpp"
-    "src/scenelayer.cpp"
+    "include/renderer.h"
     "src/scene.cpp"
+    "include/scene.h"
 )
 
 target_include_directories(
@@ -112,6 +62,7 @@ target_include_directories(
 target_link_libraries(
     gamestart
     PRIVATE
+        tiny_obj_loader
         ${OPENGL_LIBRARIES}
         fmt
         glm

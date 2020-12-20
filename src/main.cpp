@@ -1,9 +1,9 @@
-#include <application.h>
-#include <imguilayer.h>
+#include <core/application.h>
+#include <core/gamelayer.h>
+#include <core/imguilayer.h>
 #include <iostream>
 #include <lyra/lyra.hpp>
 #include <memory>
-#include <scenelayer.h>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
@@ -49,15 +49,14 @@ int main(
     }
 
     app.AttachLayer(
-        std::unique_ptr<gamestart::SceneLayer>(new gamestart::SceneLayer()));
+        std::unique_ptr<gamestart::GameLayer>(new gamestart::GameLayer()));
 
     app.AttachLayer(
         std::unique_ptr<gamestart::ImGuiLayer>(new gamestart::ImGuiLayer([](uint32_t fps) {
             ImGui::ShowDemoWindow();
-            ImGui::Begin("fpswindow");
-            ImGui::Text("fps: %u", fps);
-            ImGui::End();
         })));
+
+    auto sceneLayer = app.GetFirstLayerOfType<gamestart::GameLayer>();
 
     return app.Run();
 }
